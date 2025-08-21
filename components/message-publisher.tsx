@@ -106,7 +106,8 @@ export function MessagePublisher() {
 
       if (messageType === "request") {
         // Request-response pattern
-        const response = await natsClient.request(resolvedTopic, resolvedPayload, 5000) // 5 second timeout
+        const response = await natsClient.request(resolvedTopic, resolvedPayload) 
+        console.log("🚀 ~ handlePublish ~ response => ", response);
         logEntry.response = response
         logEntry.responseTime = Date.now() - startTime
         logEntry.status = "success"

@@ -120,7 +120,7 @@ export function PublishHistory({ logs, onClearLogs }: PublishHistoryProps) {
                     <div className="space-y-1">
                       <div className="text-sm font-medium text-green-700">Response:</div>
                       <div className="bg-green-50 p-2 rounded text-sm">
-                        <pre className="font-mono whitespace-pre-wrap">{log.response}</pre>
+                        <pre className="font-mono whitespace-pre-wrap">{JSON.stringify(log.response, null, 2)}</pre>
                       </div>
                     </div>
                   )}

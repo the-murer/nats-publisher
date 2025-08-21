@@ -17,7 +17,7 @@ export default function NatsInterface() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">NATS Interface</h1>
+            <h1 className="text-3xl font-bold">NATS Publisher</h1>
             <p className="text-muted-foreground">Manage NATS servers, topics, and JetStream publishing</p>
           </div>
           <ConnectionStatus />
