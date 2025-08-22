@@ -1,16 +1,26 @@
-"use client"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useNatsStore } from "@/lib/nats-store"
-import { Send, ArrowLeftRight, Zap, Reply } from "lucide-react"
+"use client";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useNatsStore } from "@/lib/nats-store";
+import { Zap, Reply } from "lucide-react";
+import {
+  getMessageTypeIcon,
+  getMessageTypeColor,
+} from "@/lib/topics/topic-utils";
 
 interface TopicSelectorProps {
-  selectedTopicId: string
-  onTopicChange: (topicId: string) => void
-  localVariables: Record<string, string>
-  onVariableChange: (key: string, value: string) => void
+  selectedTopicId: string;
+  onTopicChange: (topicId: string) => void;
+  localVariables: Record<string, string>;
+  onVariableChange: (key: string, value: string) => void;
 }
 
 export function TopicSelector({
@@ -19,37 +29,18 @@ export function TopicSelector({
   localVariables,
   onVariableChange,
 }: TopicSelectorProps) {
-  const { topics, globalVariables } = useNatsStore()
-  const selectedTopic = topics.find((t) => t.id === selectedTopicId)
+  const { topics, globalVariables } = useNatsStore();
+  const selectedTopic = topics.find((t) => t.id === selectedTopicId);
 
-  const resolvePayload = (payload: string, localVars: Record<string, string>) => {
-    const allVars = { ...globalVariables, ...localVars }
+  const resolvePayload = (
+    payload: string,
+    localVars: Record<string, string>
+  ) => {
+    const allVars = { ...globalVariables, ...localVars };
     return payload.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return allVars[key] || match
-    })
-  }
-
-  const getMessageTypeIcon = (type: string) => {
-    switch (type) {
-      case "request":
-        return <ArrowLeftRight className="h-3 w-3" />
-      case "jetstream":
-        return <Zap className="h-3 w-3" />
-      default:
-        return <Send className="h-3 w-3" />
-    }
-  }
-
-  const getMessageTypeColor = (type: string) => {
-    switch (type) {
-      case "request":
-        return "bg-blue-500"
-      case "jetstream":
-        return "bg-purple-500"
-      default:
-        return "bg-green-500"
-    }
-  }
+      return allVars[key] || match;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -65,7 +56,9 @@ export function TopicSelector({
                 <div className="flex items-center gap-2">
                   {topic.name}
                   {getMessageTypeIcon(topic.messageType || "publish")}
-                  {topic.isJetStream && topic.messageType !== "jetstream" && <Zap className="h-3 w-3" />}
+                  {topic.isJetStream && topic.messageType !== "jetstream" && (
+                    <Zap className="h-3 w-3" />
+                  )}
                 </div>
               </SelectItem>
             ))}
@@ -81,27 +74,38 @@ export function TopicSelector({
               <div className="font-mono text-sm p-2 bg-muted rounded">
                 {resolvePayload(selectedTopic.topic, localVariables)}
               </div>
-              {selectedTopic.topic !== resolvePayload(selectedTopic.topic, localVariables) && (
-                <div className="text-xs text-muted-foreground mt-1">Template: {selectedTopic.topic}</div>
+              {selectedTopic.topic !==
+                resolvePayload(selectedTopic.topic, localVariables) && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Template: {selectedTopic.topic}
+                </div>
               )}
             </div>
             <div>
               <Label className="text-sm font-medium">Type</Label>
               <div className="flex items-center gap-2 p-2">
                 <Badge
-                  className={`flex items-center gap-1 text-white ${getMessageTypeColor(selectedTopic.messageType || "publish")}`}
+                  className={`flex items-center gap-1 text-white ${getMessageTypeColor(
+                    selectedTopic.messageType || "publish"
+                  )}`}
                 >
                   {getMessageTypeIcon(selectedTopic.messageType || "publish")}
                   {(selectedTopic.messageType || "publish").toUpperCase()}
                 </Badge>
-                {selectedTopic.isJetStream && selectedTopic.messageType !== "jetstream" && (
-                  <Badge variant="default" className="flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    JetStream
-                  </Badge>
-                )}
+                {selectedTopic.isJetStream &&
+                  selectedTopic.messageType !== "jetstream" && (
+                    <Badge
+                      variant="default"
+                      className="flex items-center gap-1"
+                    >
+                      <Zap className="h-3 w-3" />
+                      JetStream
+                    </Badge>
+                  )}
                 {selectedTopic.streamName && (
-                  <span className="text-sm text-muted-foreground">({selectedTopic.streamName})</span>
+                  <span className="text-sm text-muted-foreground">
+                    ({selectedTopic.streamName})
+                  </span>
                 )}
               </div>
             </div>
@@ -114,8 +118,11 @@ export function TopicSelector({
                 <Reply className="h-4 w-4" />
                 {resolvePayload(selectedTopic.responseTopic, localVariables)}
               </div>
-              {selectedTopic.responseTopic !== resolvePayload(selectedTopic.responseTopic, localVariables) && (
-                <div className="text-xs text-muted-foreground mt-1">Template: {selectedTopic.responseTopic}</div>
+              {selectedTopic.responseTopic !==
+                resolvePayload(selectedTopic.responseTopic, localVariables) && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Template: {selectedTopic.responseTopic}
+                </div>
               )}
             </div>
           )}
@@ -128,7 +135,11 @@ export function TopicSelector({
                 {Object.entries(localVariables).map(([key, value]) => (
                   <div key={key} className="flex items-center gap-2">
                     <Label className="w-24 text-sm">{key}:</Label>
-                    <Input value={value} onChange={(e) => onVariableChange(key, e.target.value)} className="flex-1" />
+                    <Input
+                      value={value}
+                      onChange={(e) => onVariableChange(key, e.target.value)}
+                      className="flex-1"
+                    />
                   </div>
                 ))}
               </div>
@@ -147,5 +158,5 @@ export function TopicSelector({
         </div>
       )}
     </div>
-  )
+  );
 }
