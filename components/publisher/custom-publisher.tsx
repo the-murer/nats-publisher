@@ -52,7 +52,7 @@ export function CustomPublisher({
     <div className="space-y-4">
       {Object.keys(globalVariables).length > 0 && (
         <Card>
-          <CardHeader className="pb-3">
+          <CardHeader>
             <CardTitle className="text-sm flex items-center gap-2">
               <Variable className="h-4 w-4" />
               Available Variables
