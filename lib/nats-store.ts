@@ -5,8 +5,7 @@ export interface NatsServer {
   id: string
   name: string
   url: string
-  username?: string
-  password?: string
+  seed?: string
   token?: string
   isActive: boolean
 }

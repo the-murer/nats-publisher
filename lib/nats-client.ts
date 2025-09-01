@@ -4,7 +4,21 @@ import {
   type Msg,
   type JetStreamManager,
   type JetStreamClient,
+  credsAuthenticator,
 } from "nats.ws";
+
+const formatCreds = (token: string, seed: string) => {
+  return `-----BEGIN NATS USER JWT-----
+${token}
+------END NATS USER JWT------
+************************* IMPORTANT *************************
+NKEY Seed printed below can be used sign and prove identity.
+NKEYs are sensitive and should be treated as secrets.
+-----BEGIN USER NKEY SEED-----
+${seed}
+------END USER NKEY SEED------
+*************************************************************`;
+};
 
 export class NatsClient {
   private connection: NatsConnection | null = null;
@@ -14,14 +28,17 @@ export class NatsClient {
   async connect(
     url: string,
     options?: {
-      username?: string;
-      password?: string;
       token?: string;
+      seed?: string;
     }
   ): Promise<void> {
     try {
+      const authenticator = formatCreds(options?.token || "", options?.seed || "");
       const connectOptions: any = {
         servers: [url],
+        authenticator: credsAuthenticator(
+          new TextEncoder().encode(authenticator),
+        ),
       };
 
       // if (options?.username && options?.password) {

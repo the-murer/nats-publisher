@@ -1,38 +1,46 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useNatsStore } from "@/lib/nats-store"
-import { natsClient } from "@/lib/nats-client"
-import { Wifi, WifiOff, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useNatsStore } from "@/lib/nats-store";
+import { natsClient } from "@/lib/nats-client";
+import { Wifi, WifiOff, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function ConnectionStatus() {
-  const { isConnected, currentServer, connectionError, setConnectionStatus, setCurrentServer } = useNatsStore()
-  const [isConnecting, setIsConnecting] = useState(false)
+  const {
+    isConnected,
+    currentServer,
+    connectionError,
+    setConnectionStatus,
+    setCurrentServer,
+  } = useNatsStore();
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const handleConnect = async () => {
-    if (!currentServer) return
+    if (!currentServer) return;
 
-    setIsConnecting(true)
+    setIsConnecting(true);
     try {
       await natsClient.connect(currentServer.url, {
-        username: currentServer.username,
-        password: currentServer.password,
+        seed: currentServer.seed,
         token: currentServer.token,
-      })
-      setConnectionStatus(true)
+      });
+      setConnectionStatus(true);
     } catch (error) {
-      setConnectionStatus(false, error instanceof Error ? error.message : "Connection failed")
+      setConnectionStatus(
+        false,
+        error instanceof Error ? error.message : "Connection failed"
+      );
     } finally {
-      setIsConnecting(false)
+      setIsConnecting(false);
     }
-  }
+  };
 
   const handleDisconnect = async () => {
-    await natsClient.disconnect()
-    setConnectionStatus(false)
-  }
+    await natsClient.disconnect();
+    setConnectionStatus(false);
+  };
 
   if (!currentServer) {
     return (
@@ -40,13 +48,19 @@ export function ConnectionStatus() {
         <WifiOff className="h-3 w-3" />
         No Server Selected
       </Badge>
-    )
+    );
   }
 
   return (
     <div className="flex items-center gap-2">
       <Badge
-        variant={isConnected ? "default" : connectionError ? "destructive" : "secondary"}
+        variant={
+          isConnected
+            ? "default"
+            : connectionError
+            ? "destructive"
+            : "secondary"
+        }
         className="flex items-center gap-2"
       >
         {isConnecting ? (
@@ -56,10 +70,18 @@ export function ConnectionStatus() {
         ) : (
           <WifiOff className="h-3 w-3" />
         )}
-        {isConnecting ? "Connecting..." : isConnected ? "Connected" : "Disconnected"}
+        {isConnecting
+          ? "Connecting..."
+          : isConnected
+          ? "Connected"
+          : "Disconnected"}
       </Badge>
 
-      {currentServer && <span className="text-sm text-muted-foreground">{currentServer.name}</span>}
+      {currentServer && (
+        <span className="text-sm text-muted-foreground">
+          {currentServer.name}
+        </span>
+      )}
 
       {isConnected ? (
         <Button size="sm" variant="outline" onClick={handleDisconnect}>
@@ -71,7 +93,9 @@ export function ConnectionStatus() {
         </Button>
       )}
 
-      {connectionError && <span className="text-sm text-destructive">{connectionError}</span>}
+      {connectionError && (
+        <span className="text-sm text-destructive">{connectionError}</span>
+      )}
     </div>
-  )
+  );
 }

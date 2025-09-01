@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -12,51 +12,48 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { useNatsStore, type NatsServer } from "@/lib/nats-store"
+} from "@/components/ui/dialog";
+import { useNatsStore, type NatsServer } from "@/lib/nats-store";
 
 interface ServerFormData {
-  name: string
-  url: string
-  username: string
-  password: string
-  token: string
+  name: string;
+  url: string;
+  seed: string;
+  token: string;
 }
 
 interface ServerEditDialogProps {
-  server: NatsServer
-  onClose: () => void
+  server: NatsServer;
+  onClose: () => void;
 }
 
 export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
-  const { updateServer } = useNatsStore()
+  const { updateServer } = useNatsStore();
   const [formData, setFormData] = useState<ServerFormData>({
     name: server.name,
     url: server.url,
-    username: server.username || "",
-    password: server.password || "",
+    seed: server.seed || "",
     token: server.token || "",
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.name.trim() || !formData.url.trim()) {
-      return
+      return;
     }
 
     const serverData = {
       name: formData.name.trim(),
       url: formData.url.trim(),
-      username: formData.username.trim() || undefined,
-      password: formData.password.trim() || undefined,
+      seed: formData.seed.trim() || undefined,
       token: formData.token.trim() || undefined,
       isActive: server.isActive,
-    }
+    };
 
-    updateServer(server.id, serverData)
-    onClose()
-  }
+    updateServer(server.id, serverData);
+    onClose();
+  };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -64,7 +61,9 @@ export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit Server</DialogTitle>
-            <DialogDescription>Update your NATS server connection details</DialogDescription>
+            <DialogDescription>
+              Update your NATS server connection details
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -73,7 +72,9 @@ export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
                 id="name"
                 placeholder="Production NATS"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </div>
@@ -83,27 +84,21 @@ export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
                 id="url"
                 placeholder="ws://localhost:8080"
                 value={formData.url}
-                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, url: e.target.value })
+                }
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="seed">Seed</Label>
               <Input
-                id="username"
+                id="seed"
                 placeholder="Optional"
-                value={formData.username}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Optional"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                value={formData.seed}
+                onChange={(e) =>
+                  setFormData({ ...formData, seed: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -112,7 +107,9 @@ export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
                 id="token"
                 placeholder="Optional"
                 value={formData.token}
-                onChange={(e) => setFormData({ ...formData, token: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, token: e.target.value })
+                }
               />
             </div>
           </div>
@@ -125,5 +122,5 @@ export function ServerEditDialog({ server, onClose }: ServerEditDialogProps) {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
