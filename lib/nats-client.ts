@@ -33,22 +33,20 @@ export class NatsClient {
     }
   ): Promise<void> {
     try {
-      const authenticator = formatCreds(options?.token || "", options?.seed || "");
+      const authenticator = formatCreds(
+        options?.token || "",
+        options?.seed || ""
+      );
       const connectOptions: any = {
         servers: [url],
-        authenticator: credsAuthenticator(
-          new TextEncoder().encode(authenticator),
-        ),
+
+        ...(options?.token &&
+          options?.seed && {
+            authenticator: credsAuthenticator(
+              new TextEncoder().encode(authenticator)
+            ),
+          }),
       };
-
-      // if (options?.username && options?.password) {
-      //   connectOptions.user = options.username
-      //   connectOptions.pass = options.password
-      // }
-
-      // if (options?.token) {
-      //   connectOptions.token = options.token
-      // }
 
       this.connection = await connect(connectOptions);
       this.jetstream = this.connection.jetstream();
